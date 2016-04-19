@@ -1,0 +1,118 @@
+---------------------
+Installation
+---------------------
+
+Install pip and virtualenv
+Create new projects directory
+Inside the dir. type "virtualenv env" and "source ./env/bin/activate"
+New virtual env. will be activated (NOTE: If you want to exit, type "deactivate" any time)
+Type "pip install Django"
+Then for checking if Django is installed type "python "import django; print(django.get_version())"
+
+---------------------
+First project
+---------------------
+$ django-admin startproject mysite
+$ python manage.py runserver 8080
+$ python manage.py startapp polls
+
+---------------------
+Setting MYSQL
+---------------------
+sudo apt-get install python-dev python3-dev
+sudo apt-get install libmysqlclient-dev
+pip install MySQL-python
+pip install pymysql
+pip install mysqlclient
+
+==> in settings.py
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql', 
+        'NAME': 'DB_NAME',
+        'USER': 'DB_USER',
+        'PASSWORD': 'DB_PASSWORD',
+        'HOST': 'localhost',   # Or an IP Address that your DB is hosted on
+        'PORT': '3306',
+    }
+}
+
+---------------------
+Migrations
+---------------------
+
+$ python manage.py makemigrations polls
+$ python manage.py sqlmigrate polls 0001 (return plain SQL code of migrations)
+$ python manage.py migrate
+
+---------------------
+Django API Shell
+---------------------
+
+$ python manage.py shell
+
+from polls.models import Question, Choice
+Question.objects.all() # returns []
+from django.utils import 
+q = Question(question_text="What's new?", pub_date=timezone.now())
+q.save()
+q.id
+
+#create() directly saves
+c = q.choice_set.create(choice_text='Just hacking again', votes=0)
+c.delete()
+
+Question.objects.filter(id=1)
+
+for q in Question.objects.raw('SELECT * FROM polls_question'):
+	print(q)
+
+(Mapping to model by using AS)	
+>>> Person.objects.raw('''SELECT first AS first_name,
+...                              last AS last_name,
+...                              bd AS birth_date,
+...                              pk AS id,
+...                       FROM some_other_table''')
+
+
+-------------------
+Django ADMIN
+-------------------
+
+$ python manage.py createsuperuser (user: admin, pass: admin123)
+
+Authorize admin for the models via editing admin.py
+
+
+-----------------
+View Rendering
+-----------------
+Plain Rendering:
+
+	from django.shortcuts import render
+	from django.http import HttpResponse
+	from django.template import loader
+	from .models import Question
+
+	def index(request):
+		latest_question_list = Question.objects.all()[:5]
+		
+		template = loader.get_template('polls/index.html')
+		context = {
+			'latest_question_list': latest_question_list,
+		}
+		
+		#renders to a string
+		rendered = template.render(context, request) 
+		return HttpResponse(rendered)
+	  
+Shortcut Rendering:
+	
+	from django.shortcuts import render
+	from .models import Question
+	
+	def index(request):
+		latest_question_list = Question.objects.order_by('-pub_date')[:5]
+		context = {'latest_question_list': latest_question_list}
+		return render(request, 'polls/index.html', context)
+
