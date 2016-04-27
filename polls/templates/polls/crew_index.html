@@ -1,0 +1,12 @@
+{% if upcoming_flights_list %}
+    <ul>
+    {% for flight in upcoming_flights_list %}
+        <li><!--<a href="/polls/{{ question.id }}/">{{ question.question_text }}</a></li>-->
+        	Code: {{ flight.flight_leg_code }} <br>
+        	Time: {{ flight.time }}
+    	</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No flights are available.</p>
+{% endif %}

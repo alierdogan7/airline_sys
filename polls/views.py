@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import loader
 
-from .models import Question
+from .models import *
 
 
 def index(request):
@@ -17,6 +17,21 @@ def index(request):
 	}
 
 	return render(request, 'polls/index.html', context)
+
+def crew_index(request):
+	
+	flights = FlightLeg.objects.raw('''select * from polls_flightleg 
+									natural join polls_crew_participates 
+									where crew_id = 1 order by time ''')
+
+	context = {
+		'upcoming_flights_list': flights
+	}
+
+	return render(request, 'polls/crew_index.html', context)
+		
+		
+
 
 def detail(request, question_id):
 	return HttpResponse("Youre looking for question %s." % question_id)

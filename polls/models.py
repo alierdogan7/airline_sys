@@ -59,7 +59,7 @@ class Staff(models.Model):
 	phone = models.CharField(max_length=20, null=False)
 	last_login = models.DateTimeField('last login', null=True)
 	salary = models.IntegerField(default=0)
-	manager_id = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, db_column='manager_id')
+	manager_id = models.ForeignKey('self', on_delete=models.SET_NULL, blank=True ,null=True, db_column='manager_id')
 	works_in = models.ForeignKey(Airport, on_delete=models.CASCADE, db_column='works_in')
 
 	def __str__(self):
@@ -77,6 +77,9 @@ class Manager(models.Model):
 class Salesman(models.Model):
  	staff_id = models.ForeignKey(Staff, primary_key=True, db_column='staff_id')
  	no_of_sold_tickets = models.PositiveSmallIntegerField(default=0)
+
+ 	def __str__(self):
+ 		return (Staff.objects.filter(pk=staff_id)[0]).fullname
 
 class Plane(models.Model):
 	plane_id = models.AutoField(primary_key=True)
@@ -162,7 +165,7 @@ class FlightLeg(models.Model):
 class Reservation(models.Model):
 	reservation_code = models.CharField(max_length=6, primary_key=True)
 	cust_id = models.ForeignKey(Customer, db_column='cust_id', null=False)
-	fligt_leg = models.ForeignKey(FlightLeg, null=False)
+	flight_leg = models.ForeignKey(FlightLeg, null=False)
 	seat = models.ForeignKey(Seat, null=False)
 	sold_by = models.ForeignKey(Salesman, null=True, blank=True)
 	extra_luggage = models.BooleanField(default=False)
