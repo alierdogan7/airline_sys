@@ -60,7 +60,7 @@ class Staff(models.Model):
 	phone = models.CharField(max_length=20, null=False)
 	last_login = models.DateTimeField('last login', null=True)
 	salary = models.IntegerField(default=0)
-	manager_id = models.ForeignKey('self', on_delete=models.SET_NULL, blank=True ,null=True, db_column='manager_id')
+	manager_id = models.ForeignKey('Manager', on_delete=models.SET_NULL, blank=True ,null=True, db_column='manager_id')
 	works_in = models.ForeignKey(Airport, on_delete=models.CASCADE, db_column='works_in')
 
 	def __str__(self):
@@ -79,6 +79,9 @@ class Manager(models.Model):
  	)
  	degree = models.CharField(max_length=100, null=False, choices=DEGREE)
 
+ 	def __str__(self):
+ 		return self.staff_id.fullname
+
 class Salesman(models.Model):
  	staff_id = models.OneToOneField(
  				Staff,
@@ -89,7 +92,7 @@ class Salesman(models.Model):
  	no_of_sold_tickets = models.PositiveSmallIntegerField(default=0)
 
  	def __str__(self):
- 		return (Staff.objects.filter(pk=staff_id)[0]).fullname
+ 		return self.staff_id.fullname
 
 class Plane(models.Model):
 	plane_id = models.AutoField(primary_key=True)
@@ -146,6 +149,8 @@ class Crew(models.Model):
 	since = models.DateField(auto_now_add=True)
 	participates = models.ManyToManyField('FlightLeg')
 
+ 	def __str__(self):
+ 		return self.staff_id.fullname
 
 class Pilot(models.Model):
  	staff_id = models.OneToOneField(
@@ -160,6 +165,9 @@ class Pilot(models.Model):
 	)
 	license_type = models.CharField(max_length=100, null=False, choices=LICENSE_TYPES)
 
+ 	def __str__(self):
+ 		return self.staff_id.fullname
+
 class Hostess(models.Model):
  	staff_id = models.OneToOneField(
  				Staff,
@@ -169,6 +177,9 @@ class Hostess(models.Model):
  	
 	mother_language = models.CharField(max_length=30)
 	first_aid_ability = models.BooleanField(default=False)
+
+ 	def __str__(self):
+		return self.staff_id.fullname
 
 class FlightLeg(models.Model):
 	flight_leg_code = models.CharField(max_length=7, null=False)
