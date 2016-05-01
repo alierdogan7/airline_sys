@@ -47,6 +47,7 @@ class Customer(models.Model):
 	last_login = models.DateTimeField('last login', null=True)
 	no_of_flights = models.PositiveSmallIntegerField(default=0)
 	lives_in = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, db_column='lives_in')
+	flights = models.ManyToManyField('Flight')
 
 	def __str__(self):
 		return self.fullname
@@ -66,7 +67,11 @@ class Staff(models.Model):
 		return self.fullname
 
 class Manager(models.Model):
- 	staff_id = models.ForeignKey(Staff, primary_key=True, db_column='staff_id')
+ 	staff_id = models.OneToOneField(
+ 				Staff,
+ 				on_delete=models.CASCADE,
+ 				primary_key=True,
+ 				db_column='staff_id')
 
  	DEGREE = (
  		("full", "full authorization"),
@@ -75,7 +80,12 @@ class Manager(models.Model):
  	degree = models.CharField(max_length=100, null=False, choices=DEGREE)
 
 class Salesman(models.Model):
- 	staff_id = models.ForeignKey(Staff, primary_key=True, db_column='staff_id')
+ 	staff_id = models.OneToOneField(
+ 				Staff,
+ 				on_delete=models.CASCADE,
+ 				primary_key=True,
+ 				db_column='staff_id')
+ 	
  	no_of_sold_tickets = models.PositiveSmallIntegerField(default=0)
 
  	def __str__(self):
@@ -83,7 +93,7 @@ class Salesman(models.Model):
 
 class Plane(models.Model):
 	plane_id = models.AutoField(primary_key=True)
-	model = models.CharField(max_length=100, null=False)
+	model = models.CharField(max_length=120, null=False)
 	production_year = models.CharField(max_length=4, null=False)
 	max_seats = models.PositiveSmallIntegerField(null=False)
 
@@ -93,7 +103,7 @@ class Plane(models.Model):
 	def gen_seats(self, num_of_seats, seats_per_row):
 		#seat_list = []
 		if num_of_seats % seats_per_row != 0:
-			print "invalid options"
+			print "invalid options."
 			return	
 		else:
 			for number in xrange(1, num_of_seats / seats_per_row + 1):
@@ -122,23 +132,37 @@ class Seat(models.Model):
 		
 
 class Crew(models.Model):
- 	staff_id = models.ForeignKey(Staff, primary_key=True, db_column='staff_id')
+ 	staff_id = models.OneToOneField(
+ 				Staff,
+ 				on_delete=models.CASCADE,
+ 				primary_key=True,
+ 				db_column='staff_id')
+ 	
 	num_of_flights = models.PositiveSmallIntegerField(default=0)
 	since = models.DateField(auto_now_add=True)
 	participates = models.ManyToManyField('FlightLeg')
 
 
 class Pilot(models.Model):
- 	staff_id = models.ForeignKey(Staff, primary_key=True, db_column='staff_id')
-
+ 	staff_id = models.OneToOneField(
+ 				Staff,
+ 				on_delete=models.CASCADE,
+ 				primary_key=True,
+ 				db_column='staff_id')
+ 	
 	LICENSE_TYPES = (
-			("national", "only in country"),
+			("national", "only in a country"),
 			("international", "international flights"),
 	)
 	license_type = models.CharField(max_length=100, null=False, choices=LICENSE_TYPES)
 
 class Hostess(models.Model):
- 	staff_id = models.ForeignKey(Staff, primary_key=True, db_column='staff_id')
+ 	staff_id = models.OneToOneField(
+ 				Staff,
+ 				on_delete=models.CASCADE,
+ 				primary_key=True,
+ 				db_column='staff_id')
+ 	
 	mother_language = models.CharField(max_length=30)
 	first_aid_ability = models.BooleanField(default=False)
 
@@ -173,4 +197,23 @@ class Reservation(models.Model):
 
 	def __str__(self):
 		return "%s" % (self.reservation_code)
-		
+
+class Promotion(models.Model):
+	promotion_id = models.AutoField(primary_key=True)
+	discount_percent = models.PositiveSmallIntegerField(null=False)
+	last_valid_date = models.DateTimeField(null=False)
+	given_cust = models.ForeignKey(Customer, null=False)
+
+class Ticket(models.Model):
+	ticket_no = models.AutoField(primary_key=True)
+	original_price = models.IntegerField(null=False)
+	discounted_price = models.IntegerField(null=True)
+	promotion = models.ForeignKey(Promotion, null=True)
+	reservation_code = models.ForeignKey(Reservation, db_column='reservation_code', null=False)
+
+class Flight(models.Model):
+	flight_id = models.AutoField(primary_key=True)
+	no_of_legs = models.PositiveSmallIntegerField(default=0)
+	total_time_in_mins = models.PositiveSmallIntegerField(default=0)
+	total_distance_in_kms = models.PositiveSmallIntegerField(default=0)
+	legs = models.ManyToManyField('FlightLeg')
