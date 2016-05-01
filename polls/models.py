@@ -95,22 +95,26 @@ class Plane(models.Model):
 	plane_id = models.AutoField(primary_key=True)
 	model = models.CharField(max_length=120, null=False)
 	production_year = models.CharField(max_length=4, null=False)
-	max_seats = models.PositiveSmallIntegerField(null=False)
+	no_of_seats = models.PositiveSmallIntegerField(null=False)
+	seats_per_row = models.PositiveSmallIntegerField(null=False, default=6)
 
 	def __str__(self):
 		return "%s (ID: %s)" % (self.model, self.plane_id)
 
-	def gen_seats(self, num_of_seats, seats_per_row):
-		#seat_list = []
-		if num_of_seats % seats_per_row != 0:
+	def gen_seats(self):
+		if self.no_of_seats % self.seats_per_row != 0:
 			print "invalid options."
 			return	
 		else:
-			for number in xrange(1, num_of_seats / seats_per_row + 1):
-				for letter in xrange(ord('A'), ord('A') + seats_per_row):
-					#seat_list.append( (number, chr(letter)) )
-					self.seat_set.create(seat_number=number, seat_letter=chr(letter))
-
+			#generate seats
+			all_seats = []
+			for number in xrange(1, self.no_of_seats / self.seats_per_row + 1):
+				for letter in xrange(ord('A'), ord('A') + self.seats_per_row):
+					klass = "business" if number <= 3 else "economy"
+					all_seats.append( Seat(plane_id=self, seat_number=number, 
+											seat_letter=chr(letter), seat_class=klass) )
+					#self.seat_set.create(seat_number=number, seat_letter=chr(letter))			
+			self.seat_set.bulk_create(all_seats) #for quickly inserting all the tuples
 
 
 class Seat(models.Model):

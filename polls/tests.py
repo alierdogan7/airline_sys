@@ -1,6 +1,8 @@
 from django.test import TestCase
+from django.utils import timezone
 from polls.models import *
 import random
+import datetime
 
 # Create your tests here.
 
@@ -143,13 +145,84 @@ def init_all_staff():
 	init_hostess(hostess_names)
 
 
+def init_planes():
+	Plane.objects.all().delete()
 
+	planes = [
+		("Boeing-707", "2000", 180),
+		("Airbus A380", "1996", 240),
+		("Boeing-550", "1992", 120),
+		("Minicraft", "1991", 60),
+	]
+
+	for plane in planes:
+		p = Plane.objects.create(model=plane[0],
+							production_year=plane[1],
+							no_of_seats=plane[2])
+		p.gen_seats()
+
+def init_flight_legs():
+	airports = Airport.objects.all()
+	planes = Plane.objects.all()
+
+	for i in xrange(10):
+		rand_plane = random.choice(planes)
+		price_for_economy = random.randrange(100,400,30)
+		time = timezone.now() + datetime.timedelta(days=random.randint(1,60))
+		selected_airports = random.sample(airports, 2)
+		
+		args = {
+			"flight_leg_code": "TK-7" + str(random.randint(100,300)),
+		    "time":  time,
+		    "estimated_arr_time": time + datetime.timedelta(minutes=random.randint(60, 250)),
+		    "plane_id": rand_plane,
+		    "no_of_available_seats": rand_plane.no_of_seats,
+		    "travel_distance": random.randint(400,2000),
+		    "price_for_economy": price_for_economy,
+		    "price_for_business": price_for_economy + 200,
+			"arrives": selected_airports[0],    
+			"departs": selected_airports[1]
+		}
+
+		FlightLeg.objects.create(**args)
+
+def init_reservations():
+	alphabet = [ chr(char) for char in xrange(ord('A'), ord('Z') + 1) ] 
+	customers = Customer.objects.all()
+	flight_legs = FlightLeg.objects.all()
+	salesmen = Salesman.objects.all()
+
+	for i in xrange(len(customers)):
+		flight_leg = random.choice(flight_legs)
+		args = {
+			"reservation_code": "".join(random.sample(alphabet, 6)),
+			"cust_id": random.choice(customers),
+			"flight_leg": flight_leg,
+			"seat": random.choice(flight_leg.plane_id.seat_set.all()),
+			"sold_by": random.choice(salesmen),
+			"extra_luggage": random.choice([True, False])
+		}
+
+		Reservation.objects.create(**args)
 
 def init():
+	print "initializing cities..."
 	init_cities()
+
+	print "initializing airports..."
 	init_airports()
+
+	print "initializing customers..."
 	init_customers()
+	
+	print "initializing all staff..."
 	init_all_staff()
 	
+	print "initializing planes..."
+	init_planes()
+	
+	print "initializing flight legs..."
+	init_flight_legs()
 
-init()
+	print "initializing reservations..."
+	init_reservations()
