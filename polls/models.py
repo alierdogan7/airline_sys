@@ -48,6 +48,9 @@ class Customer(models.Model):
 	no_of_flights = models.PositiveSmallIntegerField(default=0)
 	lives_in = models.ForeignKey(City, on_delete=models.SET_NULL, null=True, db_column='lives_in')
 	flights = models.ManyToManyField('Flight')
+	
+	class Meta:
+		unique_together = ("fullname", "password")
 
 	def __str__(self):
 		return self.fullname
