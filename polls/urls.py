@@ -10,5 +10,6 @@ urlpatterns = [
 
 	# yusuf
 	url(r'^cust_log/$', views.cust_log, name='cust_log'),
+	url(r'^create_account/$', views.create_account, name='create_account'),
 	url(r'^cust(?P<cust_id>[0-9]+)/index/$', views.cust_index, name='cust_index'),
 ]
