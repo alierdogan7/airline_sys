@@ -1,0 +1,135 @@
+<!-- {% if my_reserv_list %}
+    <ul>
+    {% for reserv in my_reserv_list %}
+        <li>
+        	Code: {{ reserv.reservation_code }} <br>
+        	Seat: {{ reserv.seat }} <br>
+        	Reservation time: {{ reserv.reservation_time }} <br>
+        	Extra luggage: {{ reserv.extra_luggage }} <br>
+    	</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No reservation has made</p>
+{% endif %} -->
+<html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="http://pingendo.github.io/pingendo-bootstrap/themes/default/bootstrap.css" rel="stylesheet" type="text/css">
+  </head><body>
+    <div class="section">
+
+    {% if my_reserv_list %}
+    <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Reservation Code</th>
+                  <th>Reservation Time Time</th>
+                  <th>Departure Time</th>
+                  <th>Departure Airport</th>
+                  <th>Arrival Time</th>
+                  <th>Arrival Airport</th>
+                  <th>Travel Time</th>
+                  <th>Travel Distance</th>
+                  <th>Modify</th>
+                  <th>Delete</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for reserv in my_reserv_list %}
+                <tr>
+                  <td>{{ reserv.reservation_code }}</td>
+                  <td>{{ reserv.reservation_time }}</td>
+                  <td>{{ reserv.flight_leg.time }}</td>
+                  <td>{{ reserv.flight_leg.departs.airport_code }}</td>
+                  <td>{{ reserv.flight_leg.estimated_arr_time}}</td>
+                  <td>Atatürk</td>
+                  <td>2 hr 3 min</td>
+                  <td>500 km</td>
+                  <td>
+                    <a><i class="fa fa-pencil"></i></a>
+                  </td>
+                  <td>
+                    <a><i class="fa fa-trash"></i></a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% else %}
+        <div class="alert alert-info" role="alert"> no reservation has made </div>
+    {% endif %}
+    <div class="section">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <form class="form-inline" role="form">
+              <div class="form-group">
+                <div class="dropdown">
+                  <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Departure Airport
+                    <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <a href="#">Esenboğa</a>
+                    </li>
+                    <li>
+                      <a href="#">Atatürk</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="input-group date" data-provide="datepicker">
+                  <input type="text" class="form-control" placeholder="Departure Time">
+                  <div class="input-group-addon">
+                    <span class="glyphicon glyphicon-th"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="dropdown">
+                  <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown">Arrival Airport
+                    <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <li>
+                      <a href="#">Esenboğa</a>
+                    </li>
+                    <li>
+                      <a href="#">Atatürk</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="input-group date" data-provide="datepicker">
+                  <input type="text" class="form-control" placeholder="Arrival Time">
+                  <div class="input-group-addon">
+                    <span class="glyphicon glyphicon-th"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <button type="submit" class="btn btn-default">Add Reservation</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+
+</body></html>
