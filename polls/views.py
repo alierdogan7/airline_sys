@@ -28,9 +28,7 @@ def crew_index(request):
 		'upcoming_flights_list': flights
 	}
 
-	return render(request, 'polls/crew_index.html', context)
-		
-		
+	return render(request, 'polls/crew_index.html', context)	
 
 
 def detail(request, question_id):
