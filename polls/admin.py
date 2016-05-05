@@ -74,7 +74,7 @@ class PlaneAdmin(admin.ModelAdmin):
 
 @admin.register(Seat)
 class SeatAdmin(admin.ModelAdmin):
-	list_display = ('seat_number', 'seat_letter', 'plane_id')
+		list_display = ('seat_number', 'seat_letter', 'plane_id')
 
 @admin.register(Promotion)
 class PromotionAdmin(admin.ModelAdmin):

@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.template import loader
 
-from polls.models import FlightLeg, Customer, Reservation, City
+from polls.models import *
 
 
 def index(request):
@@ -18,18 +18,6 @@ def index(request):
 
 	return render(request, 'polls/index.html', context)
 
-def crew_index(request):
-	
-	flights = FlightLeg.objects.raw('''select * from polls_flightleg 
-									natural join polls_crew_participates 
-									where crew_id = 1 order by time ''')
-
-	context = {
-		'upcoming_flights_list': flights
-	}
-
-	return render(request, 'polls/crew_index.html', context)
-
 def create_account(request):
 	msg = ""
 	cities = City.objects.all()
@@ -41,7 +29,7 @@ def create_account(request):
 		phone = request.POST['phone']
 		city = request.POST['city']
 
-		city_obj = City.objects.raw('select * from polls_city where city_name = %s', [city])
+		city_obj = City.objects.get(city_name__exact=city)
 
 		cust_new = Customer.objects.create(
 			fullname=fname,
@@ -49,10 +37,42 @@ def create_account(request):
 			email=email,
 			phone=phone,
 			lives_in=city_obj
-			)
+		)
 		
 		
 	return render(request, 'polls/create_account.html', {'city_list': cities, 'msg': msg, }) 
+
+def crew_log(request):
+	login_error = False
+	if request.POST:
+		
+		uname = request.POST['username']
+		pword = request.POST['password']
+		users = Staff.objects.raw('select * from polls_staff where fullname = %s and password = %s', [uname, pword])
+
+		u_count = 0
+		for u in users:
+			u_count = u_count + 1
+
+		if (u_count == 1):
+			return crew_index(request, users[0].staff_id)
+		else:
+			login_error = True
+		
+	return render(request, 'polls/crew_log.html', {'login_error':login_error}) 
+	
+def crew_index(request, staff_id):
+	flights = FlightLeg.objects.raw(''' select * from polls_flightleg where id 
+										in (select flightleg_id from polls_crew_participates 
+											where crew_id = ''' + str(staff_id) + 
+											''') order by time ''')
+
+	context = {
+		'upcoming_flights_list': flights
+	}
+
+	return render(request, 'polls/crew_index.html', context)
+
 
 def cust_log(request):
 	login_error = False

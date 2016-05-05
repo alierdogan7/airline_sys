@@ -1,12 +1,66 @@
-{% if upcoming_flights_list %}
-    <ul>
-    {% for flight in upcoming_flights_list %}
-        <li><!--<a href="/polls/{{ question.id }}/">{{ question.question_text }}</a></li>-->
-        	Code: {{ flight.flight_leg_code }} <br>
-        	Time: {{ flight.time }}
-    	</li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No flights are available.</p>
-{% endif %}
+<html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="http://pingendo.github.io/pingendo-bootstrap/themes/default/bootstrap.css" rel="stylesheet" type="text/css">
+  </head><body>
+    <div class="section">
+
+    {% if upcoming_flights_list %}
+    <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Flight Code</th>
+                  <th>Departure Time</th>
+                  <th>Departure Airport</th>
+                  <th>Arrival Time</th>
+                  <th>Arrival Airport</th>
+                  <th>Travel Time</th>
+                  <th>Travel Distance</th>
+                  <th>Plane</th>
+                  <th>Cancelled</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for flight in upcoming_flights_list %}
+                <tr>
+                  <td>{{ flight.flight_leg_code }}</td>
+                  <td>{{ flight.time }}</td>
+                  <td>{{ flight.departs.airport_name }}</td>
+                  <td>{{ flight.estimated_arr_time }}</td>
+                  <td>{{ flight.arrives.airport_name }}</td>
+                  <td></td>
+                  <td>{{ flight.travel_distance }} </td>
+                  <td>{{ flight.plane_id.model }}</td>
+                  <td>{{ flight.is_cancelled }}</td>
+                  <td>
+                    <a><i class="fa fa-pencil"></i></a>
+                  </td>
+                  <td>
+                    <a><i class="fa fa-trash"></i></a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% else %}
+        <div class="alert alert-info" role="alert"> No Upcoming Flights </div>
+    {% endif %}
+    
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+
+</body></html>
