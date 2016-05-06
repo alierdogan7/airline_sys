@@ -155,6 +155,7 @@ def init_all_staff():
 		'Ian Baker',
 		'Caleb Barlow',
 		'Beau Dennis',
+		'Thanh Zabriskie',
 	]
 
 	hostess_names = [	
@@ -162,7 +163,12 @@ def init_all_staff():
 		'Denton Alexander',
 		'Kyle English',
 		'Zachery Briggs',
-		'Elton Nicholson'
+		'Elton Nicholson',
+		'Annabel Romanowski', 
+		'Jeannie Nunemaker', 
+		'Kimberlee Ravelo', 
+		'Rich Liechty', 
+		'Peg Mcnamara', 
 	]
 
 
@@ -194,10 +200,14 @@ def init_planes():
 		p.gen_seats()
 
 def init_flight_legs():
+	FlightLeg.objects.all().delete()
+
 	airports = Airport.objects.all()
 	planes = Plane.objects.all()
+	hostesses = Hostess.objects.all()
+	pilots = Pilot.objects.all()
 
-	for i in xrange(10):
+	for i in xrange(60):
 		rand_plane = random.choice(planes)
 		price_for_economy = random.randrange(100,400,30)
 		time = timezone.now() + datetime.timedelta(days=random.randint(1,60))
@@ -209,14 +219,19 @@ def init_flight_legs():
 		    "estimated_arr_time": time + datetime.timedelta(minutes=random.randint(60, 250)),
 		    "plane_id": rand_plane,
 		    "no_of_available_seats": rand_plane.no_of_seats,
-		    "travel_distance": random.randint(800,2000, 100),
+		    "travel_distance": random.randint(800,2000),
 		    "price_for_economy": price_for_economy,
 		    "price_for_business": price_for_economy + 200,
 			"arrives": selected_airports[0],    
 			"departs": selected_airports[1]
 		}
 
-		FlightLeg.objects.create(**args)
+		flightleg = FlightLeg.objects.create(**args)
+		crew_ids = []
+		for crew in random.sample(hostesses, 2) + random.sample(pilots, 2):
+			flightleg.crew_set.add(Crew.objects.get(pk=crew.staff_id))
+
+
 
 def init_reservations():
 	alphabet = [ chr(char) for char in xrange(ord('A'), ord('Z') + 1) ] 
@@ -238,7 +253,7 @@ def init_reservations():
 		Reservation.objects.create(**args)
 
 def trunc_users():
-	User.objects.all().delete()
+	User.objects.all().delete()	
 
 def init():
 	print "truncating users table"

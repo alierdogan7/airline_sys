@@ -169,7 +169,7 @@ class Pilot(models.Model):
 	license_type = models.CharField(max_length=101, null=False, choices=LICENSE_TYPES)
 
  	def __str__(self):
- 		return self.staff_id.fullname
+ 		return "Pilot " + self.staff_id.fullname
 
 class Hostess(models.Model):
  	staff_id = models.OneToOneField(
@@ -182,7 +182,7 @@ class Hostess(models.Model):
 	first_aid_ability = models.BooleanField(default=False)
 
  	def __str__(self):
-		return self.staff_id.fullname
+		return "Hostess " + self.staff_id.fullname
 
 class FlightLeg(models.Model):
 	flight_leg_code = models.CharField(max_length=7, null=False)
