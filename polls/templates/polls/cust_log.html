@@ -46,15 +46,15 @@ body{
             <form role="form" action="" method="post">
             {% csrf_token %}
               <div class="form-group">
-                <label class="control-label" for="exampleInputEmail1">Username</label>
-                <input class="form-control" id="exampleInputEmail1" placeholder="username" name="username" type="text">
+                <label class="control-label" for="exampleInputEmail1">Email</label>
+                <input class="form-control" id="exampleInputEmail1" placeholder="email" name="email" type="text">
               </div>
               <div class="form-group">
                 <label class="control-label" for="exampleInputPassword1">Password</label>
                 <input class="form-control" id="exampleInputPassword1" name="password" type="password">
               </div>
               <button type="submit" class="btn btn-primary">Sign In</button>
-              <a href="/polls/create_account" class="btn btn-info" role="button">Create Account</a>
+              <a href="/create_account" class="btn btn-info" role="button">Create Account</a>
               {% if login_error %}
 				        <div class="alert alert-danger" role="alert"> error </div>
               {% else %}

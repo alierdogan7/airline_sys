@@ -40,7 +40,7 @@ class Airport(models.Model):
 
 class Customer(models.Model):
 	cust_id = models.AutoField(primary_key=True)
-	password = models.CharField(max_length=20, null=False)
+	password = models.CharField(max_length=128, null=False)
 	fullname = models.CharField(max_length=100, null=False)
 	email = models.EmailField(null=False)
 	phone = models.CharField(max_length=20, null=False)
@@ -57,14 +57,14 @@ class Customer(models.Model):
 
 class Staff(models.Model):
 	staff_id = models.AutoField(primary_key=True)
-	password = models.CharField(max_length=20, null=False)
+	password = models.CharField(max_length=128, null=False)
 	fullname = models.CharField(max_length=100, null=False)
 	email = models.EmailField(null=False)
 	phone = models.CharField(max_length=20, null=False)
 	last_login = models.DateTimeField('last login', null=True)
 	salary = models.IntegerField(default=0)
 	manager_id = models.ForeignKey('Manager', on_delete=models.SET_NULL, blank=True ,null=True, db_column='manager_id')
-	works_in = models.ForeignKey(Airport, on_delete=models.CASCADE, db_column='works_in')
+	works_in = models.ForeignKey(Airport, on_delete=models.SET_NULL, null=True, db_column='works_in')
 
 	def __str__(self):
 		return self.fullname
@@ -99,7 +99,7 @@ class Salesman(models.Model):
 
 class Plane(models.Model):
 	plane_id = models.AutoField(primary_key=True)
-	model = models.CharField(max_length=120, null=False)
+	model = models.CharField(max_length=130, null=False)
 	production_year = models.CharField(max_length=4, null=False)
 	no_of_seats = models.PositiveSmallIntegerField(null=False)
 	seats_per_row = models.PositiveSmallIntegerField(null=False, default=6)
@@ -129,8 +129,8 @@ class Seat(models.Model):
 	plane_id = models.ForeignKey(Plane, on_delete=models.CASCADE, db_column='plane_id', null=False)
 
 	SEAT_CLASSES = (
-			('business', 'Business Class'),
-			('economy', 'Economy Class'),
+			('business', 'BusinessClass'),
+			('economy', 'EconomyClass'),
 	)
 	seat_class = models.CharField(max_length=20, null=False, choices=SEAT_CLASSES)
 
@@ -166,7 +166,7 @@ class Pilot(models.Model):
 			("national", "only in a country"),
 			("international", "international flights"),
 	)
-	license_type = models.CharField(max_length=100, null=False, choices=LICENSE_TYPES)
+	license_type = models.CharField(max_length=101, null=False, choices=LICENSE_TYPES)
 
  	def __str__(self):
  		return self.staff_id.fullname
