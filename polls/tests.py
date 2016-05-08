@@ -1,6 +1,8 @@
 from django.test import TestCase
 from django.utils import timezone
 from polls.models import *
+from django.contrib.auth.models import User, Group
+from django.contrib.auth.hashers import *
 import random
 import datetime
 
@@ -54,13 +56,22 @@ def init_customers():
 
 	cities = City.objects.all()
 	for cname in names:
+		mail = cname.replace(" ", "_").lower() + "@gmail.com"
+		hashed_pass = make_password("123")
+
 		Customer.objects.create(
 			fullname=cname,
-			password='123',
-			email='abc@gmail.com',
+			password=hashed_pass,
+			email=mail,
 			phone='03403043',
 			lives_in=random.choice(cities)
 			)
+
+		user = User(username=mail, 
+					email=mail,
+					password=hashed_pass)
+		user.save()
+
 
 # CLOSURE FOR PRODUCING INIT FUNCTIONS OF DIFFERENT STAFF TYPES
 def make_init_staff(staff_type, create_func):
@@ -73,15 +84,23 @@ def make_init_staff(staff_type, create_func):
 		airports = Airport.objects.all()
 		inserted_staffs = []
 		for mname in names:
+			mail = mname.replace(" ", "_").lower() + "@gmail.com"
+			hashed_pass = make_password("123")
+
 			inserted_staffs.append(
 				Staff.objects.create(
 				fullname=mname,
-				password='123',
-				email='staff@gmail.com',
+				password=hashed_pass,
+				email=mail,
 				phone='03403011',
 				salary=random.randrange(1000, 5000, 200),
 				works_in=random.choice(airports)
 			))
+
+			user = User(username=mail, 
+					email=mail,
+					password=hashed_pass)
+			user.save()
 
 		for inserted in inserted_staffs:
 			create_func(inserted)
@@ -91,12 +110,22 @@ def make_init_staff(staff_type, create_func):
 def init_all_staff():
 	def c_salesman(inserted):
 		Salesman.objects.create(staff_id=inserted)
+		# set group permissions of salesman
+		u = User.objects.get(email__exact=inserted.email)
+		u.groups.add(Group.objects.get(name__exact="Salesman"))
+		u.is_staff = True
+		u.save()
 
 	def c_manager(inserted):
 		Manager.objects.create (
 				staff_id=inserted,
 				degree='full'
 			)
+		# set manager permissions
+		u = User.objects.get(email__exact=inserted.email)
+		u.is_superuser = True
+		u.is_staff = True
+		u.save()
 
 	def c_pilot(inserted):
 		Crew.objects.create(staff_id=inserted)
@@ -109,7 +138,10 @@ def init_all_staff():
 
 	manager_names = [
 		'Howard Robinson',
-		'Lance Nash'
+		'Lance Nash',
+		'Ali Burak',
+		'Yusuf Said',
+		'Abdullah Alperen'
 	]
 
 	salesmen_names = [
@@ -123,6 +155,7 @@ def init_all_staff():
 		'Ian Baker',
 		'Caleb Barlow',
 		'Beau Dennis',
+		'Thanh Zabriskie',
 	]
 
 	hostess_names = [	
@@ -130,7 +163,12 @@ def init_all_staff():
 		'Denton Alexander',
 		'Kyle English',
 		'Zachery Briggs',
-		'Elton Nicholson'
+		'Elton Nicholson',
+		'Annabel Romanowski', 
+		'Jeannie Nunemaker', 
+		'Kimberlee Ravelo', 
+		'Rich Liechty', 
+		'Peg Mcnamara', 
 	]
 
 
@@ -162,10 +200,14 @@ def init_planes():
 		p.gen_seats()
 
 def init_flight_legs():
+	FlightLeg.objects.all().delete()
+
 	airports = Airport.objects.all()
 	planes = Plane.objects.all()
+	hostesses = Hostess.objects.all()
+	pilots = Pilot.objects.all()
 
-	for i in xrange(10):
+	for i in xrange(60):
 		rand_plane = random.choice(planes)
 		price_for_economy = random.randrange(100,400,30)
 		time = timezone.now() + datetime.timedelta(days=random.randint(1,60))
@@ -177,14 +219,19 @@ def init_flight_legs():
 		    "estimated_arr_time": time + datetime.timedelta(minutes=random.randint(60, 250)),
 		    "plane_id": rand_plane,
 		    "no_of_available_seats": rand_plane.no_of_seats,
-		    "travel_distance": random.randint(400,2000),
+		    "travel_distance": random.randint(800,2000),
 		    "price_for_economy": price_for_economy,
 		    "price_for_business": price_for_economy + 200,
 			"arrives": selected_airports[0],    
 			"departs": selected_airports[1]
 		}
 
-		FlightLeg.objects.create(**args)
+		flightleg = FlightLeg.objects.create(**args)
+		crew_ids = []
+		for crew in random.sample(hostesses, 2) + random.sample(pilots, 2):
+			flightleg.crew_set.add(Crew.objects.get(pk=crew.staff_id))
+
+
 
 def init_reservations():
 	alphabet = [ chr(char) for char in xrange(ord('A'), ord('Z') + 1) ] 
@@ -205,7 +252,13 @@ def init_reservations():
 
 		Reservation.objects.create(**args)
 
+def trunc_users():
+	User.objects.all().delete()	
+
 def init():
+	print "truncating users table"
+	trunc_users()
+
 	print "initializing cities..."
 	init_cities()
 

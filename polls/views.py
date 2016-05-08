@@ -3,8 +3,10 @@ from django.shortcuts import render
 # Create your views here.
 from django.http import HttpResponse
 from django.template import loader
-
-from polls.models import FlightLeg, Customer, Reservation, City
+from django.contrib.auth.models import User, Group
+from django.contrib.auth import authenticate
+from django.contrib.auth.hashers import *
+from polls.models import *
 
 
 def index(request):
@@ -18,11 +20,70 @@ def index(request):
 
 	return render(request, 'polls/index.html', context)
 
-def crew_index(request):
+
+"""
+mail = mname.replace(" ", "_").lower() + "@gmail.com"
+			hashed_pass = make_password("123")
+			u = User.objects.get(email__exact=inserted.email)
+		u.is_superuser = True
+		u.is_staff = True
+		u.save()
+"""
+def create_account(request):
+	msg = ""
+	cities = City.objects.all()
+	if request.POST:
+		
+		mail = request.POST['email']
+		pword = request.POST['pword']
+		fname = request.POST['fname']
+		phone = request.POST['phone']
+		city = request.POST['city']
+
+		city_obj = City.objects.get(city_name__exact=city)
+		
+		hashed_pass = make_password(pword)
+
+		cust_new = Customer.objects.create(
+			fullname=fname,
+			password=hashed_pass,
+			email=mail,
+			phone=phone,
+			lives_in=city_obj
+		)
+
+		user = User(username=mail, 
+					email=mail,
+					password=hashed_pass)
+		user.save()
+
+		msg = "Account added successfully!"
+
+	return render(request, 'polls/create_account.html', {'city_list': cities, 'msg': msg, }) 
+
+def crew_log(request):
+	login_error = False
+	if request.POST:
+		
+		uname = request.POST['username']
+		pword = request.POST['password']
+		hashed_pass = make_password(pword)
+		users = Staff.objects.raw('select * from polls_staff where email = %s ', 
+									[uname])
+
+		user = authenticate(username=uname, password=pword)
+		if user is not None:
+			return crew_index(request, users[0].staff_id)
+		else:
+			login_error = True
+		
+	return render(request, 'polls/crew_log.html', {'login_error':login_error}) 
 	
-	flights = FlightLeg.objects.raw('''select * from polls_flightleg 
-									natural join polls_crew_participates 
-									where crew_id = 1 order by time ''')
+def crew_index(request, staff_id):
+	flights = FlightLeg.objects.raw(''' select * from polls_flightleg where id 
+										in (select flightleg_id from polls_crew_participates 
+											where crew_id =  %s ) order by time ''',
+											[str(staff_id)])
 
 	context = {
 		'upcoming_flights_list': flights
@@ -30,49 +91,28 @@ def crew_index(request):
 
 	return render(request, 'polls/crew_index.html', context)
 
-def create_account(request):
-	msg = ""
-	cities = City.objects.all()
-	if request.POST:
-		
-		email = request.POST['email']
-		pword = request.POST['pword']
-		fname = request.POST['fname']
-		phone = request.POST['phone']
-		city = request.POST['city']
-
-		city_obj = City.objects.raw('select * from polls_city where city_name = %s', [city])
-
-		cust_new = Customer.objects.create(
-			fullname=fname,
-			password=pword,
-			email=email,
-			phone=phone,
-			lives_in=city_obj
-			)
-		
-		
-	return render(request, 'polls/create_account.html', {'city_list': cities, 'msg': msg, }) 
 
 def cust_log(request):
 	login_error = False
 	if request.POST:
 		
-		uname = request.POST['username']
+		email = request.POST['email']
 		pword = request.POST['password']
-		users = Customer.objects.raw('select * from polls_customer where fullname = %s and password = %s', [uname, pword])
+		hashed_pass = make_password(pword)
+		customer = Customer.objects.raw('''select * from polls_customer where 
+									email = %s''', 
+									[email])
+		user = authenticate(username=email, password=pword)
 
-		u_count = 0
-		for u in users:
-			u_count = u_count + 1
-
-		if (u_count == 1):
-			return cust_index(request, users[0].cust_id)
+		customer = customer[0]
+		if user is not None and customer is not None:
+			return cust_index(request, customer.cust_id)
 		else:
 			login_error = True
 		
 	return render(request, 'polls/cust_log.html', {'login_error':login_error}) 
 		
+
 def cust_index(request, cust_id):
 	my_reserv = Reservation.objects.raw('select * from polls_reservation where cust_id = %s', [cust_id])		
 

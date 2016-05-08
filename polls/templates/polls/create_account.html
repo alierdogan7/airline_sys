@@ -6,48 +6,67 @@
     <link href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link href="http://pingendo.github.io/pingendo-bootstrap/themes/default/bootstrap.css" rel="stylesheet" type="text/css">
   </head><body>
-<form role="form" action="" method="post">
-    {% csrf_token %}
-  <fieldset class="form-group">
-    <label for="exampleInputEmail1">Email address</label>
-    <input type="email" class="form-control" name="email" placeholder="Enter email">
-    <!-- <small class="text-muted">We'll never share your email with anyone else.</small> -->
-  </fieldset>
-  <fieldset class="form-group">
-    <label for="exampleInputEmail1">Fullname</label>
-    <input type="text" class="form-control" name="fname" placeholder="Enter fullname">
-    <small class="text-muted">it is going to be username</small>
-  </fieldset>
-  
-  <fieldset class="form-group">
-    <label for="exampleInputPassword1">Password</label>
-    <input type="password" class="form-control" name="pword" placeholder="Password">
-  </fieldset>
-  
-  <fieldset class="form-group">
-    <label for="exampleInputEmail1">Phone</label>
-    <input type="number" class="form-control" name="phone" placeholder="Enter Phone Number">
-    <small class="text-muted">We'll never share your phone with anyone else.</small>
-  </fieldset>
+  <body>
+    <div class="section">
+      <div class="container">
+        <div class="row">
+          <h1>
+            Airline Data Management System - Create Account
+          </h1>
+        </div>
+        
+        <div class="row">
+          <div class="col-md-12">
+                          
+              <form role="form" action="" method="post">
+                  {% csrf_token %}
+                <fieldset class="form-group">
+                  <label for="exampleInputEmail1">Email address</label>
+                  <input type="email" class="form-control" name="email" placeholder="Enter email">
+                  <!-- <small class="text-muted">We'll never share your email with anyone else.</small> -->
+                </fieldset>
+                <fieldset class="form-group">
+                  <label for="exampleInputEmail1">Fullname</label>
+                  <input type="text" class="form-control" name="fname" placeholder="Enter fullname">
+                  <small class="text-muted">it is going to be username</small>
+                </fieldset>
+                
+                <fieldset class="form-group">
+                  <label for="exampleInputPassword1">Password</label>
+                  <input type="password" class="form-control" name="pword" placeholder="Password">
+                </fieldset>
+                
+                <fieldset class="form-group">
+                  <label for="exampleInputEmail1">Phone</label>
+                  <input type="number" class="form-control" name="phone" placeholder="Enter Phone Number">
+                  <small class="text-muted">We'll never share your phone with anyone else.</small>
+                </fieldset>
 
-  <fieldset class="form-group">
-    <label for="exampleSelect1">City</label>
-    <select class="form-control" name="city">
-      {% if city_list %}
-      <ul>
-        {% for city in city_list %}
-            <option> {{ city.city_name }} </option>
-        {% endfor %}
-        </ul>
-      {% else %}
-          <p>No City available.</p>
-      {% endif %}
-    </select>
-  </fieldset>
-    
-  <button type="submit" class="btn btn-primary">Create</button>
-  <a href="/polls/cust_log" class="btn btn-info" role="button">Sign In</a>
-</form>
+                <fieldset class="form-group">
+                  <label for="exampleSelect1">City</label>
+                  <select class="form-control" name="city">
+                    {% if city_list %}
+                    <ul>
+                      {% for city in city_list %}
+                          <option> {{ city.city_name }} </option>
+                      {% endfor %}
+                      </ul>
+                    {% else %}
+                        <p>No City available.</p>
+                    {% endif %}
+                  </select>
+                </fieldset>
+                  
+                <button type="submit" class="btn btn-primary">Create</button>
+                <a href="/cust_log" class="btn btn-info" role="button">Sign In</a>
+              </form>
+                
+          </div>
+        </div>
+      </div>
+    </div>
   
 
-</body></html>
+</body>
+
+</html>
