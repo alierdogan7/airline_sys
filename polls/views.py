@@ -134,7 +134,8 @@ def cust_index(request):
 
 def new_reserv(request):
 	#my_reserv = Reservation.objects.raw('select * from polls_reservation where cust_id = %s', [cust_id])		
-
+	pass
+	
 def reports(request):
 	cursor = connection.cursor()
 	
@@ -159,6 +160,13 @@ def reports(request):
 						FROM total_distances JOIN polls_customer USING (cust_id) 
 						WHERE total > 1000 ORDER BY total DESC """)
 	customers = [ {'fullname': row[0], 'total_travel': row[1]} for row in cursor.fetchall() ]
+
+	context = {
+	'salesmen': salesmen,
+	'customers': customers
+	}
+
+	return render(request, 'admin/reports.html', context)
 
 def cust_tickets(request):
 	#my_reserv = Reservation.objects.raw('select * from polls_reservation where cust_id = %s', [cust_id])		
