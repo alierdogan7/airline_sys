@@ -1,0 +1,101 @@
+<html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="http://pingendo.github.io/pingendo-bootstrap/themes/default/bootstrap.css" rel="stylesheet" type="text/css">
+  </head><body>
+
+	<div class="navbar navbar-default navbar-static-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-ex-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="{% url 'cust_log' %}new_reserv"><span>New Reservation</span></a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar-ex-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li class="active">
+              <a href="{% url 'cust_log' %}">My Reservations</a>
+            </li>
+            <li>
+              <a href="{% url 'cust_log' %}ticket">My Tickets</a>
+            </li>
+            
+            <li>
+              <a href="{%url 'cust_log' %}profile">Profile</a>
+            </li>
+            
+            <li>
+              <a href="#"><i class="fa fa-sign-out"></i> Sign out </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+	</div>
+
+    <div class="section">
+    	
+    	<div class="container">
+	        <div class="row">
+	          <div class="col-md-12">
+	          	{% if listing %}
+                
+              <form class="form-inline" role="form" action="#" method="get">
+      				  <fieldset class="form-group">
+                  <label for="exampleSelect1">Departure Airport</label>
+                  <select class="form-control" name="select_dep_port">
+                  {% for flight in available_flights %}
+                    <option value="{{forloop.counter0}}">{{ flight.departs }}</option>
+                  {% endfor %}
+                  </select>
+                </fieldset>
+                <fieldset class="form-group">
+                  <label for="exampleSelect1">Arrival Airport</label>
+                  <select class="form-control" name="select_arr_port">
+                  {% for flight in available_flights %}
+                    <option value="{{forloop.counter0}}">{{ flight.arrives }}</option>
+                  {% endfor %}
+                  </select>
+                </fieldset>
+                
+                <input type="submit" value="next" name="proceed">
+              </form>
+              {% else %}
+              <ul>
+                {% for flight in available_flights %}
+                      <li>
+                      <a href="{{flight.id}}">{{ flight.time }}</a>
+                      </li>
+                {% endfor %}
+              </select>
+              {% endif %}
+          	</div>
+
+          	<div class="row">
+          		{% if my_reserv_list %}
+
+          		<ul>
+					{% for ticket in my_tickets %}
+					<li>
+						<td>
+                    		<a href="#"><i class="fa fa-plus-circle"></i></a>
+                  		</td>
+					</li>
+					{% endfor %}
+				</ul>
+				{% else %}
+        			<div class="alert alert-info" role="alert"> no available flight </div>
+    			{% endif %}
+	        </div>
+  		</div>
+    </div>
+    
+  
+
+</body></html>

@@ -1,0 +1,107 @@
+<html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="http://pingendo.github.io/pingendo-bootstrap/themes/default/bootstrap.css" rel="stylesheet" type="text/css">
+  </head><body>
+
+  <div class="navbar navbar-default navbar-static-top">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-ex-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#"><span>Airline Company</span></a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar-ex-collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li>
+              <a href="{% url 'cust_log' %}">My Reservations</a>
+            </li>
+            <!-- <form action="#" method="get"> -->
+              <li class="active">
+                <!-- <button type="button" class="btn btn-link" name="tickets">My Tickets</button> -->
+                <!-- <input type="submit" class="btn btn-link" value="My Tickets" name="t"> -->
+                <a href="{% url 'cust_log' %}ticket">My Tickets</a>
+              </li>
+              
+              <li>
+                <!-- <button type="button" class="btn btn-link" name="profile">Profile</button> -->
+                <!-- <input type="submit" class="btn btn-link" value="Profile" name="p"> -->
+                <a href="{%url 'cust_log' %}profile">Profile</a>
+              </li>
+              
+              <li>
+                <a href="#"><i class="fa fa-sign-out"></i> Sign out </a>
+                <!--<button type="button" class="btn btn-link" name="signout">Sign out</button> -->
+                <!-- <input type="submit" class="btn btn-link" value="Sign out" name="s"> -->
+              </li>
+            <!-- </form> -->
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+
+    {% if my_tickets %}
+    <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Ticket No</th>
+                  <th>original price</th>
+                  <th>discounted price</th>
+                  
+                  <!-- <th>Reservation Time</th>
+                  <th>Departure Time</th>
+                  <th>Departure Airport</th>
+                  <th>Arrival Time</th>
+                  <th>Arrival Airport</th>
+                  <th>Travel Distance</th>
+                  <th>Delete</th> -->
+                </tr>
+              </thead>
+              <tbody>
+              {% for ticket in my_tickets %}
+                <tr>
+                  <!-- <td>{{ reserv.reservation_code }}</td>
+                  <td>{{ reserv.reservation_time }}</td>
+                  <td>{{ reserv.flight_leg.time }}</td>
+                  <td>{{ reserv.flight_leg.departs.airport_code }}</td>
+                  <td>{{ reserv.flight_leg.estimated_arr_time}}</td>
+                  <td>{{ reserv.flight_leg.arrives.airport_code }}</td>
+                  <td>{{ reserv.flight_leg.travel_distance}}</td>
+                  <td>
+                    <a href="{{ reserv.reservation_code }}"><i class="fa fa-trash"></i></a>
+                  </td> -->
+                  <td>{{ ticket.ticket_no }}</td>
+                  <td>{{ ticket.original_price }}</td>
+                  <td>{{ ticket.discounted_price }}</td>
+                  <td>
+                      <a href="#"><i class="fa fa-trash"></i></a>
+                  </td>
+                </tr>
+              {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% else %}
+        <div class="alert alert-info" role="alert"> no ticket has bought </div>
+    {% endif %}
+    <div class="col-sm-offset-2 col-sm-10">
+      <a href="{%url 'cust_log' %}new_ticket" class="btn btn-primary" role="button">New Ticket</a>
+    </div>
+  
+
+</body></html>

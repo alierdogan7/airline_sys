@@ -1,0 +1,55 @@
+<html><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <link href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="http://pingendo.github.io/pingendo-bootstrap/themes/default/bootstrap.css" rel="stylesheet" type="text/css">
+  </head><body>
+<div class="section">
+  <div class="container">
+  <!-- <div class="row"> -->
+  <!-- <div class="col-md-12"> -->
+
+  <form role="form" action="" method="post">
+      {% csrf_token %}
+    <fieldset class="form-group">
+      <label for="exampleInputEmail1">Email address</label>
+      <input type="email" class="form-control" name="email" value="abc@gmail.com">
+      <!-- <small class="text-muted">We'll never share your email with anyone else.</small> -->
+    </fieldset>
+    <fieldset class="form-group">
+      <label for="exampleInputEmail1">Fullname</label>
+      <input type="text" class="form-control" name="fname" value="wh">
+      <small class="text-muted">it is going to be username</small>
+    </fieldset>
+    
+    <fieldset class="form-group">
+      <label for="exampleInputPassword1">Password</label>
+      <input type="password" class="form-control" name="pword" value="123">
+    </fieldset>
+    
+    <fieldset class="form-group">
+      <label for="exampleInputEmail1">Phone</label>
+      <input type="number" class="form-control" name="phone" value="03403043">
+      <small class="text-muted">We'll never share your phone with anyone else.</small>
+    </fieldset>
+
+    <fieldset class="form-group">
+      <label for="exampleSelect1">City</label>
+      <select class="form-control" name="city">
+        <ul>
+            <option> Eskisehir </option>
+          </ul>
+        </select>
+    </fieldset>
+      
+    <button type="submit" class="btn btn-primary">Save</button>
+    
+  </form>
+  
+  <!-- </div> -->
+  <!-- </div> -->
+  </div>
+</div>
+</body></html>
