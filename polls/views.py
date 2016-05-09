@@ -83,11 +83,22 @@ def crew_log(request):
 	return render(request, 'polls/crew_log.html', {'login_error':login_error}) 
 	
 def crew_index(request, staff_id):
-	flights = FlightLeg.objects.raw(''' select * from polls_flightleg where id 
-										in (select flightleg_id from polls_crew_participates 
-											where crew_id =  %s ) order by time ''',
+	cursor = connection.cursor()
+	cursor.execute(''' SELECT * FROM upcoming_flights WHERE crew_id = %s ''',
 											[str(staff_id)])
-
+	flights = []
+	for row in cursor.fetchall():
+		flights.append({
+				'flight_leg_code': row[0],
+				'time': row[1],
+				'departs': row[2],
+				'estimated_arr_time': row[3],
+				'arrives': row[4],
+				'travel_distance': row[5],
+				'plane': row[7],
+				'is_cancelled': True if row[6] else False
+			})
+	
 	context = {
 		'upcoming_flights_list': flights
 	}
@@ -114,6 +125,7 @@ def cust_log(request):
 		if user is not None and customer is not None:
 			customer = customer[0]
 			request.session['cust_id'] = customer.cust_id
+			#return cust_index(request, customer.cust_id)
 			return redirect('cust_index')
 		else:
 			login_error = True
@@ -138,7 +150,20 @@ def cust_index(request):
 	
 	if(request.GET.get('buy')):
 		res_code = request.GET.get('reserv_code')
-		msg = "Reservation with code " + res_code + " going to be buyed"
+		
+		# class Ticket(models.Model):
+		# ticket_no = models.AutoField(primary_key=True)
+		# original_price = models.IntegerField(null=False)
+		# discounted_price = models.IntegerField(null=True)
+		# promotion = models.ForeignKey(Promotion, null=True)
+		# reservation_code = models.ForeignKey(Reservation, db_column='reservation_code', null=False)
+
+		#fl = FlightLeg.objects.get(reservation_code = res_code)
+		res = Reservation.objects.get(pk = res_code)
+		fl = res.flight_leg
+		Ticket.objects.create(original_price = fl.price_for_business, reservation_code = res)
+		
+		msg = "Reservation with code " + res_code + " ticket bought with price : " + str(fl.price_for_business)
 
 	context = {
 		'my_reserv_list': my_reserv,
@@ -268,9 +293,12 @@ def in_full_seats(full_seats, n, l):
 
 
 def cust_tickets(request):
-	
+	cust_id = request.session.get('cust_id', '')
+	my_tickets = Ticket.objects.filter(reservation_code__cust_id = cust_id)
+
+	Ticket.objects.filter
 	context = {
-		'my_reserv_list': ''
+		'my_tickets': my_tickets
 	}
 	return render(request, 'polls/cust_tickets.html', context)
 

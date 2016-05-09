@@ -55,28 +55,12 @@
                   <th>original price</th>
                   <th>discounted price</th>
                   
-                  <!-- <th>Reservation Time</th>
-                  <th>Departure Time</th>
-                  <th>Departure Airport</th>
-                  <th>Arrival Time</th>
-                  <th>Arrival Airport</th>
-                  <th>Travel Distance</th>
-                  <th>Delete</th> -->
+                  
                 </tr>
               </thead>
               <tbody>
               {% for ticket in my_tickets %}
                 <tr>
-                  <!-- <td>{{ reserv.reservation_code }}</td>
-                  <td>{{ reserv.reservation_time }}</td>
-                  <td>{{ reserv.flight_leg.time }}</td>
-                  <td>{{ reserv.flight_leg.departs.airport_code }}</td>
-                  <td>{{ reserv.flight_leg.estimated_arr_time}}</td>
-                  <td>{{ reserv.flight_leg.arrives.airport_code }}</td>
-                  <td>{{ reserv.flight_leg.travel_distance}}</td>
-                  <td>
-                    <a href="{{ reserv.reservation_code }}"><i class="fa fa-trash"></i></a>
-                  </td> -->
                   <td>{{ ticket.ticket_no }}</td>
                   <td>{{ ticket.original_price }}</td>
                   <td>{{ ticket.discounted_price }}</td>
@@ -94,9 +78,6 @@
     {% else %}
         <div class="alert alert-info" role="alert"> no ticket has bought </div>
     {% endif %}
-    <div class="col-sm-offset-2 col-sm-10">
-      <a href="{%url 'cust_log' %}new_ticket" class="btn btn-primary" role="button">New Ticket</a>
-    </div>
   
 
 </body></html>
