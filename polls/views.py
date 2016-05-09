@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 # Create your views here.
 from django.http import HttpResponse
@@ -94,6 +94,10 @@ def crew_index(request, staff_id):
 
 def cust_log(request):
 	login_error = False
+	cust_id = request.session.get('cust_id', '')
+	if (not cust_id) and request.user.is_authenticated():
+		return cust_index(request, cust_id)
+
 	if request.POST:
 		
 		email = request.POST['email']
@@ -103,17 +107,24 @@ def cust_log(request):
 									email = %s''', 
 									[email])
 		user = authenticate(username=email, password=pword)
-
-		customer = customer[0]
+		
 		if user is not None and customer is not None:
-			return cust_index(request, customer.cust_id)
+			customer = customer[0]
+			request.session['cust_id'] = customer.cust_id
+			#return cust_index(request, customer.cust_id)
+			return redirect('cust_index')
 		else:
 			login_error = True
 		
 	return render(request, 'polls/cust_log.html', {'login_error':login_error}) 
 		
 
-def cust_index(request, cust_id):
+def cust_logout(request):
+    logout(request)	
+    return redirect('cust_log')	
+    
+def cust_index(request):
+	cust_id = request.session.get('cust_id', '')
 	my_reserv = Reservation.objects.raw('select * from polls_reservation where cust_id = %s', [cust_id])		
 
 	context = {
@@ -121,6 +132,8 @@ def cust_index(request, cust_id):
 	}
 	return render(request, 'polls/cust_index.html', context)
 
+def new_reserv(request):
+	#my_reserv = Reservation.objects.raw('select * from polls_reservation where cust_id = %s', [cust_id])		
 
 def reports(request):
 	cursor = connection.cursor()
@@ -147,8 +160,21 @@ def reports(request):
 						WHERE total > 1000 ORDER BY total DESC """)
 	customers = [ {'fullname': row[0], 'total_travel': row[1]} for row in cursor.fetchall() ]
 
-	context = {'salesmen' : salesmen, 'customers': customers}
-	return render(request, 'admin/reports.html', context)
+def cust_tickets(request):
+	#my_reserv = Reservation.objects.raw('select * from polls_reservation where cust_id = %s', [cust_id])		
+
+	context = {
+		'my_reserv_list': ''
+	}
+	return render(request, 'polls/cust_tickets.html', context)
+
+def cust_profile(request):
+	#my_reserv = Reservation.objects.raw('select * from polls_reservation where cust_id = %s', [cust_id])		
+
+	context = {
+		'my_reserv_list': ''
+	}
+	return render(request, 'polls/cust_profile.html', context)
 
 def detail(request, question_id):
 	return HttpResponse("Youre looking for question %s." % question_id)
