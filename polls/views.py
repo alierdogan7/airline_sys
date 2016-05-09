@@ -7,6 +7,7 @@ from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate, logout
 from django.contrib.auth.hashers import *
 from polls.models import *
+from polls.utils import *
 from datetime import datetime
 from django.db import connection
 import random
@@ -98,7 +99,7 @@ def cust_log(request):
 	login_error = False
 	cust_id = request.session.get('cust_id', '')
 	if (not cust_id) and request.user.is_authenticated():
-		return cust_index(request, cust_id)
+		return redirect('cust_index')
 
 	if request.POST:
 		
@@ -113,12 +114,12 @@ def cust_log(request):
 		if user is not None and customer is not None:
 			customer = customer[0]
 			request.session['cust_id'] = customer.cust_id
-			#return cust_index(request, customer.cust_id)
 			return redirect('cust_index')
 		else:
 			login_error = True
 		
 	return render(request, 'polls/cust_log.html', {'login_error':login_error}) 
+		
 
 def cust_logout(request):
     logout(request)	
@@ -128,43 +129,84 @@ def cust_index(request):
 	cust_id = request.session.get('cust_id', '')
 	my_reserv = Reservation.objects.raw('select * from polls_reservation where cust_id = %s', [cust_id])		
 
-	context = {
-		'my_reserv_list': my_reserv
-	}
-
+	msg = ""
+	
 	if(request.GET.get('delete')):
 		res_code = request.GET.get('reserv_code')
-		print "delete: " + res_code
-		context = {
-		'my_reserv_list': res_code
-		}
-
+		Reservation.objects.get(reservation_code = res_code).delete()
+		msg = "Reservation with code " + res_code + " deleted successfully"
+	
 	if(request.GET.get('buy')):
 		res_code = request.GET.get('reserv_code')
-		print "buy: " + res_code
-		context = {
-		'my_reserv_list': res_code
-		}
+		msg = "Reservation with code " + res_code + " going to be buyed"
 
+	context = {
+		'my_reserv_list': my_reserv,
+		'msg': msg,
+	}
 	return render(request, 'polls/cust_index.html', context)
+
+def reports(request):
+	cursor = connection.cursor()
+	
+	# RETRIEVE SALESMEN
+	cursor.execute("""CREATE TEMPORARY TABLE IF NOT EXISTS active_salesmen
+				AS (SELECT S.fullname, COUNT(*) AS sales
+					FROM polls_reservation R, polls_staff S
+					WHERE S.staff_id = R.sold_by_id
+					AND R.reservation_time >= DATE_FORMAT(CURDATE(),  '%Y-%m-01')
+					GROUP BY sold_by_id
+					ORDER BY sales DESC)""")
+	cursor.execute("SELECT fullname, sales FROM active_salesmen")		
+	salesmen = [ {'fullname': row[0], 'sales': row[1]} for row in cursor.fetchall() ]
+	
+	cursor.execute("""CREATE TEMPORARY TABLE IF NOT EXISTS total_distances AS 
+					(SELECT cust_id, SUM(travel_distance) AS total
+					        FROM polls_reservation R, polls_flightleg F
+					        WHERE R.flight_leg_id = F.id
+					        AND F.time >= DATE_FORMAT(CURDATE(), '%Y-%m-01') - INTERVAL 2 MONTH
+					        GROUP BY cust_id) """)
+	cursor.execute("""SELECT fullname, total 
+						FROM total_distances JOIN polls_customer USING (cust_id) 
+						WHERE total > 1000 ORDER BY total DESC """)
+	customers = [ {'fullname': row[0], 'total_travel': row[1]} for row in cursor.fetchall() ]
+
+	context = {
+	'salesmen': salesmen,
+	'customers': customers
+	}
+
+	return render(request, 'admin/reports.html', context)
 
 def new_reserv(request):
 	
-	available_flights = FlightLeg.objects.raw('select * from polls_flightleg order by time')
+	#available_flights = FlightLeg.objects.raw('select distinct * from polls_flightleg order by time')
+	airports = Airport.objects.raw('select * from polls_airport order by airport_code')
 	listing = True
+	available_flights = []
 
 	if(request.GET.get('select_dep_port') and request.GET.get('select_arr_port')):
 		ind_dep = int(request.GET.get('select_dep_port'))
-		dep_port = available_flights[ind_dep].departs
+		dep_port = airports[ind_dep].airport_name
 		
-		ind_arr = int(request.GET.get('select_dep_port'))
-		arr_port = available_flights[ind_dep].arrives
+		ind_arr = int(request.GET.get('select_arr_port'))
+		arr_port = airports[ind_arr].airport_name
 
-		available_flights = FlightLeg.objects.filter(arrives = arr_port).filter(departs = dep_port)
+		available_flights = find_flight(dep_port, arr_port)
+		val = ""
+		print available_flights
+		for fli in available_flights:
+			for f in fli:
+				val += str(f) + "-"
+			val += "\n"
+
+		#return HttpResponse(val)
+
 		listing = False
 		
 	context = {
 		'available_flights':available_flights,
+		'airports': airports,
 		'listing':listing,
 	}
 	return render(request, 'polls/new_reserv.html', context)

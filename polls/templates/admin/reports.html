@@ -1,0 +1,37 @@
+{% extends "admin/index.html" %}
+{% load i18n admin_urls %}
+{% block content %}
+<div id="content-main">
+<div class="module">
+        <table>
+        <caption>
+           Customers Travelled More Than 1,000 Miles in 3 Months
+        </caption>
+        {% for customer in customers %}
+        <tr>
+        	<th scope="row">{{ customer.fullname }}</th>
+        	<td>{{ customer.total_travel }} km</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+<div class="module">
+    <table>
+        <caption>
+           Most Active Salesmans in Current Month {% now "(M)" %}
+        </caption>
+        {% for salesman in salesmen %}
+        <tr>
+        	<th scope="row">{{ salesman.fullname }}</th>
+        	<td>{{ salesman.sales }} sales</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+</div>
+{% endblock %}
+{% block sidebar %}
+
+
+{% endblock %}

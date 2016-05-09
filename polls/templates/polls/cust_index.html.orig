@@ -1,3 +1,17 @@
+<!-- {% if my_reserv_list %}
+    <ul>
+    {% for reserv in my_reserv_list %}
+        <li>
+        	Code: {{ reserv.reservation_code }} <br>
+        	Seat: {{ reserv.seat }} <br>
+        	Reservation time: {{ reserv.reservation_time }} <br>
+        	Extra luggage: {{ reserv.extra_luggage }} <br>
+    	</li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No reservation has made</p>
+{% endif %} -->
 <html><head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -5,11 +19,14 @@
     <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <link href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
     <link href="http://pingendo.github.io/pingendo-bootstrap/themes/default/bootstrap.css" rel="stylesheet" type="text/css">
+<<<<<<< HEAD
     <style>
       input[type="submit"] {
           font-family: FontAwesome;
       } 
     </style>
+=======
+>>>>>>> e149046656ca9e5a401b63c405b1efcf09560cc5
   </head>
 <body>
   <div class="navbar navbar-default navbar-static-top">
@@ -21,7 +38,11 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
+<<<<<<< HEAD
         <a class="navbar-brand" href="{% url 'cust_index' %}"><span>Airline Company</span></a>
+=======
+        <a class="navbar-brand" href="#"><span>Airline Company</span></a>
+>>>>>>> e149046656ca9e5a401b63c405b1efcf09560cc5
       </div>
       <div class="collapse navbar-collapse" id="navbar-ex-collapse">
         <ul class="nav navbar-nav navbar-right">
@@ -59,7 +80,10 @@
                     <th>Arrival Airport</th>
                     <th>Travel Distance</th>
                     <th>Delete</th>
+<<<<<<< HEAD
                     <th>Buy</th>
+=======
+>>>>>>> e149046656ca9e5a401b63c405b1efcf09560cc5
                   </tr>
                 </thead>
                 <tbody>
@@ -72,6 +96,7 @@
                     <td>{{ reserv.flight_leg.estimated_arr_time }}</td>
                     <td>{{ reserv.flight_leg.arrives.airport_code }}</td>
                     <td>{{ reserv.flight_leg.travel_distance }}</td>
+<<<<<<< HEAD
                     <form action="#" method="get">
                       <input type="hidden" name="reserv_code" value="{{reserv.reservation_code}}">
                       <td>
@@ -82,29 +107,24 @@
                         <input type="submit" value="&#xf058;" name="buy">
                       </td>
                     </form>
+=======
+                    <td>
+                      <a><i class="fa fa-trash"></i></a>
+                    </td>
+>>>>>>> e149046656ca9e5a401b63c405b1efcf09560cc5
                   </tr>
                   {% endfor %}
                 </tbody>
               </table>
             </div>
           </div>
-        </div>
       </div>
     </div>
     {% else %}
         <div class="alert alert-info" role="alert"> no reservation has made </div>
     {% endif %}
 
-    {%if msg %}
-      <div class="alert alert-info" role="alert"> {{msg}} </div>  
-    {% else %}
-      
-    {% endif %}
-
-
     <div class="container">
       <a href="{% url 'cust_log' %}new_reserv" class="btn btn-primary" role="button">Make Reservation</a>
     </div>
-  
-
 </body></html>
