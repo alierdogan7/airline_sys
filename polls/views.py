@@ -80,11 +80,22 @@ def crew_log(request):
 	return render(request, 'polls/crew_log.html', {'login_error':login_error}) 
 	
 def crew_index(request, staff_id):
-	flights = FlightLeg.objects.raw(''' select * from polls_flightleg where id 
-										in (select flightleg_id from polls_crew_participates 
-											where crew_id =  %s ) order by time ''',
+	cursor = connection.cursor()
+	cursor.execute(''' SELECT * FROM upcoming_flights WHERE crew_id = %s ''',
 											[str(staff_id)])
-
+	flights = []
+	for row in cursor.fetchall():
+		flights.append({
+				'flight_leg_code': row[0],
+				'time': row[1],
+				'departs': row[2],
+				'estimated_arr_time': row[3],
+				'arrives': row[4],
+				'travel_distance': row[5],
+				'plane': row[7],
+				'is_cancelled': True if row[6] else False
+			})
+	
 	context = {
 		'upcoming_flights_list': flights
 	}
@@ -135,7 +146,7 @@ def cust_index(request):
 def new_reserv(request):
 	#my_reserv = Reservation.objects.raw('select * from polls_reservation where cust_id = %s', [cust_id])		
 	pass
-	
+
 def reports(request):
 	cursor = connection.cursor()
 	

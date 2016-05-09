@@ -296,20 +296,36 @@ def search_flight(source, destination, flights, visited_list):
 def trunc_users():
 	User.objects.all().delete()	
 
-def set_triggers():
+def set_triggers_views():
 	cursor = connection.cursor()
+
+	cursor.execute("DROP TRIGGER IF EXISTS after_reservation")
+	cursor.execute("DROP VIEW IF EXISTS upcoming_flights")
 
 	cursor.execute("""CREATE TRIGGER after_reservation
 						AFTER INSERT ON polls_reservation
 						FOR EACH ROW
 						BEGIN
 							UPDATE polls_salesman
-							SET no_of_tickets_sold = no_of_tickets_sold + 1
+							SET no_of_sold_tickets = no_of_sold_tickets + 1
 							WHERE staff_id = NEW.sold_by_id;
 						UPDATE polls_flightleg
 							SET no_of_available_seats = no_of_available_seats - 1
 							WHERE id = NEW.flight_leg_id;
 						END;""")
+
+	cursor.execute("""CREATE VIEW upcoming_flights AS 
+						SELECT L.flight_leg_code, L.time, L.departs, L.estimated_arr_time, 
+						L.arrives, L.travel_distance, L.is_cancelled, P.model, CP.crew_id
+						FROM polls_flightleg L, polls_crew_participates CP, polls_plane P 
+						WHERE L.id = CP.flightleg_id 
+						AND L.plane_id = P.plane_id 
+						AND L.time >= NOW() 
+						ORDER BY L.time;""")
+	
+	cursor.execute("ALTER TABLE  `polls_staff` ADD INDEX (  `fullname` ) ;")
+	cursor.execute("ALTER TABLE  `polls_customer` ADD INDEX (  `fullname` ) ;")
+	cursor.execute("ALTER TABLE  `polls_plane` ADD INDEX (  `model` ) ;")
 
 def init():
 	print "truncating users table..."
@@ -333,8 +349,8 @@ def init():
 	print "initializing flight legs..."
 	init_flight_legs()
 
+	print "setting triggers, views, indexes..."
+	set_triggers_views()
+
 	print "initializing reservations..."
 	init_reservations()
-
-	print "setting triggers..."
-	set_triggers()

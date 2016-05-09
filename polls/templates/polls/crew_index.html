@@ -20,7 +20,6 @@
                   <th>Departure Airport</th>
                   <th>Arrival Time</th>
                   <th>Arrival Airport</th>
-                  <th>Travel Time</th>
                   <th>Travel Distance</th>
                   <th>Plane</th>
                   <th>Cancelled</th>
@@ -31,19 +30,12 @@
                 <tr>
                   <td>{{ flight.flight_leg_code }}</td>
                   <td>{{ flight.time }}</td>
-                  <td>{{ flight.departs.airport_name }}</td>
+                  <td>{{ flight.departs }}</td>
                   <td>{{ flight.estimated_arr_time }}</td>
-                  <td>{{ flight.arrives.airport_name }}</td>
-                  <td></td>
+                  <td>{{ flight.arrives }}</td>
                   <td>{{ flight.travel_distance }} </td>
-                  <td>{{ flight.plane_id.model }}</td>
+                  <td>{{ flight.plane }}</td>
                   <td>{{ flight.is_cancelled }}</td>
-                  <td>
-                    <a><i class="fa fa-pencil"></i></a>
-                  </td>
-                  <td>
-                    <a><i class="fa fa-trash"></i></a>
-                  </td>
                 </tr>
                 {% endfor %}
               </tbody>
