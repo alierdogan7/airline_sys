@@ -270,7 +270,11 @@ def find_flight(source, destination):
 		print "Possible flight:"
 		for f in flight_list:
 			print "%s %s --> %s " % (f, f.departs, f.arrives )
-		possible_flights.append(flight_list)
+
+		#if last point is equal to destination, it's a valid flight route
+		if flight_list[-1].arrives == destination: 
+			possible_flights.append(flight_list)
+
 		# filter the flights
 		all_flights = [ flight for flight in all_flights if flight not in flight_list ] 
 		flight_list = search_flight(source, destination, all_flights, visited_list)
@@ -322,7 +326,7 @@ def set_triggers_views():
 						AND L.plane_id = P.plane_id 
 						AND L.time >= NOW() 
 						ORDER BY L.time;""")
-	
+
 	cursor.execute("ALTER TABLE  `polls_staff` ADD INDEX (  `fullname` ) ;")
 	cursor.execute("ALTER TABLE  `polls_customer` ADD INDEX (  `fullname` ) ;")
 	cursor.execute("ALTER TABLE  `polls_plane` ADD INDEX (  `model` ) ;")
