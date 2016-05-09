@@ -17,10 +17,11 @@ class ReservationAdmin(admin.ModelAdmin):
 
 @admin.register(FlightLeg)
 class FlightLegAdmin(admin.ModelAdmin):
-	list_display = ('flight_leg_code', 'time', 'estimated_arr_time',
-					'arrives', 'departs', 'plane_id', 'no_of_available_seats',
+	list_display = ('flight_leg_code', 'departs', 'time', 'arrives', 'estimated_arr_time',
+					'plane_id', 'no_of_available_seats',
 					'travel_distance', 'price_for_economy', 'price_for_business',
 					'is_cancelled')
+	search_fields = ['flight_leg_code']
 
 @admin.register(City)
 class CityAdmin(admin.ModelAdmin):

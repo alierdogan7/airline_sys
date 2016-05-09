@@ -7,7 +7,7 @@ from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import *
 from polls.models import *
-
+from django.db import connection
 
 def index(request):
 	latest_question_list = Question.objects.all()[:5]
@@ -120,6 +120,35 @@ def cust_index(request, cust_id):
 		'my_reserv_list': my_reserv
 	}
 	return render(request, 'polls/cust_index.html', context)
+
+
+def reports(request):
+	cursor = connection.cursor()
+	
+	# RETRIEVE SALESMEN
+	cursor.execute("""CREATE TEMPORARY TABLE IF NOT EXISTS active_salesmen
+				AS (SELECT S.fullname, COUNT(*) AS sales
+					FROM polls_reservation R, polls_staff S
+					WHERE S.staff_id = R.sold_by_id
+					AND R.reservation_time >= DATE_FORMAT(CURDATE(),  '%Y-%m-01')
+					GROUP BY sold_by_id
+					ORDER BY sales DESC)""")
+	cursor.execute("SELECT fullname, sales FROM active_salesmen")		
+	salesmen = [ {'fullname': row[0], 'sales': row[1]} for row in cursor.fetchall() ]
+	
+	cursor.execute("""CREATE TEMPORARY TABLE IF NOT EXISTS total_distances AS 
+					(SELECT cust_id, SUM(travel_distance) AS total
+					        FROM polls_reservation R, polls_flightleg F
+					        WHERE R.flight_leg_id = F.id
+					        AND F.time >= DATE_FORMAT(CURDATE(), '%Y-%m-01') - INTERVAL 2 MONTH
+					        GROUP BY cust_id) """)
+	cursor.execute("""SELECT fullname, total 
+						FROM total_distances JOIN polls_customer USING (cust_id) 
+						WHERE total > 1000 ORDER BY total DESC """)
+	customers = [ {'fullname': row[0], 'total_travel': row[1]} for row in cursor.fetchall() ]
+
+	context = {'salesmen' : salesmen, 'customers': customers}
+	return render(request, 'admin/reports.html', context)
 
 def detail(request, question_id):
 	return HttpResponse("Youre looking for question %s." % question_id)

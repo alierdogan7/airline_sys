@@ -212,7 +212,7 @@ class Reservation(models.Model):
 	sold_by = models.ForeignKey(Salesman, null=True, blank=True)
 	extra_luggage = models.BooleanField(default=False)
 	reservation_time = models.DateTimeField(auto_now_add=True)
-
+	
 	def __str__(self):
 		return "%s" % (self.reservation_code)
 

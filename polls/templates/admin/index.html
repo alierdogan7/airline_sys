@@ -1,0 +1,10 @@
+{% extends "admin/index.html" %}
+{% load i18n admin_urls %}
+{% block sidebar %}
+<div id="content-related">
+    <div class="module" >
+        <h2>Reports</h2>
+            <p><a href="{% url 'reports' %}">View Reports</a></p>
+    </div>
+</div>
+{% endblock %}
